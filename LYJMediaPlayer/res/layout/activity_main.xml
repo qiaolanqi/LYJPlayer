@@ -4,8 +4,8 @@
     android:layout_height="match_parent"
     tools:context="com.liyuejiao.player.MainActivity" >
 
-    <com.liyuejiao.player.VideoView
-        android:id="@+id/videoView1"
+    <com.liyuejiao.player.PlayerView
+        android:id="@+id/playerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
