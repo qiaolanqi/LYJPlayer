@@ -7,12 +7,13 @@
     <com.liyuejiao.player.VideoView
         android:id="@+id/videoView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="wrap_content" />
 
     <com.liyuejiao.player.MediaControllerSmall
         android:id="@+id/mediaControllerSmall"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" >
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/videoView" >
     </com.liyuejiao.player.MediaControllerSmall>
 
 </RelativeLayout>

@@ -1,6 +1,8 @@
 package com.liyuejiao.player;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.pm.ActivityInfo;
 import android.net.Uri;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -10,8 +12,9 @@ import android.widget.RelativeLayout;
 
 public class PlayerView extends RelativeLayout {
 
-    private MediaControllerSmall mMediaControllerSmall;
+    private Activity mActivity;
     private VideoView mVideoView;
+    private MediaControllerSmall mMediaControllerSmall;
 
     public PlayerView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
@@ -29,6 +32,9 @@ public class PlayerView extends RelativeLayout {
     }
 
     private void init(Context context) {
+        // Activity才有setRequestedOrientation()方法，需要类型强转
+        mActivity = (Activity) context;
+
         View view = LayoutInflater.from(context).inflate(R.layout.player_view, this);
         mVideoView = (VideoView) view.findViewById(R.id.videoView);
         mMediaControllerSmall = (MediaControllerSmall) view.findViewById(R.id.mediaControllerSmall);
@@ -52,6 +58,7 @@ public class PlayerView extends RelativeLayout {
         @Override
         public void start() {
             mVideoView.start();
+            mMediaControllerSmall.updateVideoButtonState(true);
         }
 
         @Override
@@ -61,7 +68,10 @@ public class PlayerView extends RelativeLayout {
 
         @Override
         public void pause() {
-            mVideoView.pause();
+            if (canPause()) {
+                mVideoView.pause();
+                mMediaControllerSmall.updateVideoButtonState(false);
+            }
         }
 
         @Override
@@ -97,6 +107,18 @@ public class PlayerView extends RelativeLayout {
         @Override
         public boolean canPause() {
             return true;
+        }
+
+        @Override
+        public void onRequestPlayMode(PlayMode requestPlayMode) {
+            // 请求窗口播放
+            if (requestPlayMode == PlayMode.PLAYMODE_WINDOW) {
+
+            }
+            // 请求全屏播放
+            else {
+                mActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+            }
         }
     };
 }

@@ -17,7 +17,7 @@
             android:layout_height="wrap_content"
             android:background="@drawable/ic_media_play" />
 
-        <ProgressBar
+        <SeekBar
             android:id="@+id/mediacontroller_progress"
             style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="0dp"

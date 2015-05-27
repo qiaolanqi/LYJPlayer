@@ -23,4 +23,6 @@ public interface MediaPlayerControl {
     boolean canSeekBackward();
 
     boolean canSeekForward();
+    
+    void onRequestPlayMode(PlayMode requestPlayMode);
 }

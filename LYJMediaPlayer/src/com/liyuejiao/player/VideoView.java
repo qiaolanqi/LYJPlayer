@@ -28,7 +28,7 @@ import android.view.accessibility.AccessibilityNodeInfo;
  * providers), takes care of computing its measurement from the video so that it can be used in any layout manager, and
  * provides various display options such as scaling and tinting.
  */
-public class VideoView extends SurfaceView implements MediaPlayerControl {
+public class VideoView extends SurfaceView implements android.widget.MediaController.MediaPlayerControl {
     private String TAG = "VideoView";
     // settable by the client
     private Uri mUri;
@@ -640,6 +640,12 @@ public class VideoView extends SurfaceView implements MediaPlayerControl {
 
     public boolean canSeekForward() {
         return mCanSeekForward;
+    }
+
+    @Override
+    public int getAudioSessionId() {
+        // TODO Auto-generated method stub
+        return 0;
     }
 
 }

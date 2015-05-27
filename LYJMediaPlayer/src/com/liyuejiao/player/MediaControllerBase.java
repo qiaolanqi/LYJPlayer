@@ -18,13 +18,11 @@ import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
-import android.widget.SeekBar;
-import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 
 public abstract class MediaControllerBase extends FrameLayout {
 
-    private MediaPlayerControl mPlayer;
+    protected MediaPlayerControl mPlayer;
     private Context mContext;
     // VideoView中调用setAnchorView()设置进来的View，MediaController显示的时候会感觉该AnchorView的位置进行显示
     private View mAnchor;
@@ -43,8 +41,10 @@ public abstract class MediaControllerBase extends FrameLayout {
     private boolean mDragging;
     // 默认自动消失的时间
     private static final int sDefaultTimeout = 3000;
+    protected static final int TIMER_TICKER_INTERVAL = 1000;
     private static final int FADE_OUT = 1;
     private static final int SHOW_PROGRESS = 2;
+    private static final int MSG_TIMER_TICKER = 3;
     private boolean mUseFastForward;
     private boolean mFromXml;
     private boolean mListenersSet;
@@ -119,6 +119,8 @@ public abstract class MediaControllerBase extends FrameLayout {
      *            The timeout in milliseconds. Use 0 to show the controller until hide() is called.
      */
     public void show(int timeout) {
+        // 暂停时timeout=0,防止MessageQueue队列中还有msg=FADE_OUT,3s后消失
+        mHandler.removeMessages(FADE_OUT);
         mHandler.sendEmptyMessage(SHOW_PROGRESS);
         if (timeout != 0) {
             Message msg = mHandler.obtainMessage(FADE_OUT);
@@ -147,12 +149,18 @@ public abstract class MediaControllerBase extends FrameLayout {
             switch (msg.what) {
             case FADE_OUT:
                 mShowing = false;
+                stopTimerTicker();
                 onHide();
                 break;
             case SHOW_PROGRESS:
                 mShowing = true;
+                startTimerTicker();
                 onShow();
                 break;
+            case MSG_TIMER_TICKER:
+                onTimerTicker();
+                Log.d("lyj", "onTimerTicker");
+                sendEmptyMessageDelayed(MSG_TIMER_TICKER, TIMER_TICKER_INTERVAL);
             }
         }
     };
@@ -160,6 +168,18 @@ public abstract class MediaControllerBase extends FrameLayout {
     protected abstract void onShow();
 
     protected abstract void onHide();
+
+    protected abstract void onTimerTicker();
+
+    /*************** 开启定时更新ProgressBar *********************/
+    protected void stopTimerTicker() {
+        mHandler.removeMessages(MSG_TIMER_TICKER);
+    }
+
+    protected void startTimerTicker() {
+        mHandler.removeMessages(MSG_TIMER_TICKER);
+        mHandler.sendEmptyMessage(MSG_TIMER_TICKER);
+    }
 
     public void toggle() {
         if (isShowing()) {
@@ -216,13 +236,11 @@ public abstract class MediaControllerBase extends FrameLayout {
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
-        Log.d("lyj", "MediaControllerBase dispatchTouchEvent");
         return super.dispatchTouchEvent(ev);
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        Log.d("lyj", "MediaControllerBase onTouchEvent");
         switch (event.getAction()) {
         case MotionEvent.ACTION_DOWN:
 
@@ -317,58 +335,6 @@ public abstract class MediaControllerBase extends FrameLayout {
         updatePausePlay();
     }
 
-    // There are two scenarios that can trigger the seekbar listener to trigger:
-    //
-    // The first is the user using the touchpad to adjust the posititon of the
-    // seekbar's thumb. In this case onStartTrackingTouch is called followed by
-    // a number of onProgressChanged notifications, concluded by onStopTrackingTouch.
-    // We're setting the field "mDragging" to true for the duration of the dragging
-    // session to avoid jumps in the position in case of ongoing playback.
-    //
-    // The second scenario involves the user operating the scroll ball, in this
-    // case there WON'T BE onStartTrackingTouch/onStopTrackingTouch notifications,
-    // we will simply apply the updated position without suspending regular updates.
-    protected OnSeekBarChangeListener mSeekListener = new OnSeekBarChangeListener() {
-        public void onStartTrackingTouch(SeekBar bar) {
-            show(3600000);
-
-            mDragging = true;
-
-            // By removing these pending progress messages we make sure
-            // that a) we won't update the progress while the user adjusts
-            // the seekbar and b) once the user is done dragging the thumb
-            // we will post one of these messages to the queue again and
-            // this ensures that there will be exactly one message queued up.
-            mHandler.removeMessages(SHOW_PROGRESS);
-        }
-
-        public void onProgressChanged(SeekBar bar, int progress, boolean fromuser) {
-            if (!fromuser) {
-                // We're not interested in programmatically generated changes to
-                // the progress bar's position.
-                return;
-            }
-
-            long duration = mPlayer.getDuration();
-            long newposition = (duration * progress) / 1000L;
-            mPlayer.seekTo((int) newposition);
-            if (mCurrentTime != null)
-                mCurrentTime.setText(stringForTime((int) newposition));
-        }
-
-        public void onStopTrackingTouch(SeekBar bar) {
-            mDragging = false;
-            setProgress();
-            updatePausePlay();
-            show(sDefaultTimeout);
-
-            // Ensure that progress is properly updated in the future,
-            // the call to show() does not guarantee this because it is a
-            // no-op if we are already showing.
-            mHandler.sendEmptyMessage(SHOW_PROGRESS);
-        }
-    };
-
     @Override
     public void setEnabled(boolean enabled) {
         if (mPauseButton != null) {
@@ -404,28 +370,6 @@ public abstract class MediaControllerBase extends FrameLayout {
         super.onInitializeAccessibilityNodeInfo(info);
         info.setClassName(MediaControllerBase.class.getName());
     }
-
-    private View.OnClickListener mRewListener = new View.OnClickListener() {
-        public void onClick(View v) {
-            int pos = mPlayer.getCurrentPosition();
-            pos -= 5000; // milliseconds
-            mPlayer.seekTo(pos);
-            setProgress();
-
-            show(sDefaultTimeout);
-        }
-    };
-
-    private View.OnClickListener mFfwdListener = new View.OnClickListener() {
-        public void onClick(View v) {
-            int pos = mPlayer.getCurrentPosition();
-            pos += 15000; // milliseconds
-            mPlayer.seekTo(pos);
-            setProgress();
-
-            show(sDefaultTimeout);
-        }
-    };
 
     private void installPrevNextListeners() {
         if (mNextButton != null) {
