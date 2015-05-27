@@ -1,7 +1,5 @@
 package com.liyuejiao.player;
 
-import java.util.Formatter;
-
 import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
@@ -49,8 +47,6 @@ public abstract class MediaControllerBase extends FrameLayout {
     private boolean mFromXml;
     private boolean mListenersSet;
     private View.OnClickListener mNextListener, mPrevListener;
-    StringBuilder mFormatBuilder;
-    Formatter mFormatter;
     private ImageButton mPauseButton;
     private ImageButton mFfwdButton;
     private ImageButton mRewButton;
@@ -195,44 +191,29 @@ public abstract class MediaControllerBase extends FrameLayout {
 
     }
 
-    private String stringForTime(int timeMs) {
-        int totalSeconds = timeMs / 1000;
-
-        int seconds = totalSeconds % 60;
-        int minutes = (totalSeconds / 60) % 60;
-        int hours = totalSeconds / 3600;
-
-        mFormatBuilder.setLength(0);
-        if (hours > 0) {
-            return mFormatter.format("%d:%02d:%02d", hours, minutes, seconds).toString();
-        } else {
-            return mFormatter.format("%02d:%02d", minutes, seconds).toString();
-        }
-    }
-
-    private int setProgress() {
-        if (mPlayer == null || mDragging) {
-            return 0;
-        }
-        int position = mPlayer.getCurrentPosition();
-        int duration = mPlayer.getDuration();
-        if (mProgress != null) {
-            if (duration > 0) {
-                // use long to avoid overflow
-                long pos = 1000L * position / duration;
-                mProgress.setProgress((int) pos);
-            }
-            int percent = mPlayer.getBufferPercentage();
-            mProgress.setSecondaryProgress(percent * 10);
-        }
-
-        if (mEndTime != null)
-            mEndTime.setText(stringForTime(duration));
-        if (mCurrentTime != null)
-            mCurrentTime.setText(stringForTime(position));
-
-        return position;
-    }
+//    private int setProgress() {
+//        if (mPlayer == null || mDragging) {
+//            return 0;
+//        }
+//        int position = mPlayer.getCurrentPosition();
+//        int duration = mPlayer.getDuration();
+//        if (mProgress != null) {
+//            if (duration > 0) {
+//                // use long to avoid overflow
+//                long pos = 1000L * position / duration;
+//                mProgress.setProgress((int) pos);
+//            }
+//            int percent = mPlayer.getBufferPercentage();
+//            mProgress.setSecondaryProgress(percent * 10);
+//        }
+//
+//        if (mEndTime != null)
+//            mEndTime.setText(stringForTime(duration));
+//        if (mCurrentTime != null)
+//            mCurrentTime.setText(stringForTime(position));
+//
+//        return position;
+//    }
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {

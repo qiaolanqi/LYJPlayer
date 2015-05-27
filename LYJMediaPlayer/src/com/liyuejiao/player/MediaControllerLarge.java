@@ -7,32 +7,31 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
+import android.widget.TextView;
 
-public class MediaControllerSmall extends MediaControllerBase implements View.OnClickListener {
-
+public class MediaControllerLarge extends MediaControllerBase implements View.OnClickListener {
     private ImageButton mPauseButton;
     private SeekBar mProgress;
-    private ImageButton mFullScreenButton;
-    private boolean mDragging;
+    private TextView mCurrentTime;
+    private TextView mTotalTime;
 
-    // 如何控制调用那个构造方法？
-    public MediaControllerSmall(Context context, AttributeSet attrs, int defStyle) {
+    public MediaControllerLarge(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         initView();
     }
 
-    public MediaControllerSmall(Context context, AttributeSet attrs) {
+    public MediaControllerLarge(Context context, AttributeSet attrs) {
         super(context, attrs);
         initView();
     }
 
-    public MediaControllerSmall(Context context) {
+    public MediaControllerLarge(Context context) {
         super(context);
         initView();
     }
 
     private void initView() {
-        mLayoutInflater.inflate(R.layout.media_controller_small, this);
+        mLayoutInflater.inflate(R.layout.media_controller_large, this);
         mPauseButton = (ImageButton) findViewById(R.id.mediacontroller_pause);
         if (mPauseButton != null) {
             mPauseButton.setOnClickListener(this);
@@ -44,10 +43,8 @@ public class MediaControllerSmall extends MediaControllerBase implements View.On
             mProgress.setMax(1000);
             mProgress.setOnSeekBarChangeListener(mSeekBarChangeListener);
         }
-        mFullScreenButton = (ImageButton) findViewById(R.id.mediacontroller_fullscreen);
-        if (mFullScreenButton != null) {
-            mFullScreenButton.setOnClickListener(this);
-        }
+        mCurrentTime = (TextView) findViewById(R.id.mediacontroller_time);
+        mTotalTime = (TextView) findViewById(R.id.mediacontroller_total);
     }
 
     @Override
@@ -65,28 +62,15 @@ public class MediaControllerSmall extends MediaControllerBase implements View.On
                 show();
             }
             break;
-        case R.id.mediacontroller_fullscreen:
-            // 全屏
-            mPlayer.onRequestPlayMode(PlayMode.PLAYMODE_FULLSCREEN);
-            break;
         default:
             break;
         }
     }
 
-    /**
-     * 拖动SeekBar结束时，根据当前SeekBar进度，将播放器seekTo到响应的位置pos.<br>
-     * curProgress：SeekBar当前进度<br>
-     * maxProgress：SeekBar最大进度<br>
-     * mPlayer.getDuration:视频总时长<br>
-     * 
-     * currentPos = curProgress / maxProgress * getDuration
-     */
     private OnSeekBarChangeListener mSeekBarChangeListener = new OnSeekBarChangeListener() {
 
         @Override
         public void onStopTrackingTouch(SeekBar seekBar) {
-            mDragging = false;
             int curProgress = seekBar.getProgress();
             int maxProgress = seekBar.getMax();
 
@@ -100,7 +84,8 @@ public class MediaControllerSmall extends MediaControllerBase implements View.On
 
         @Override
         public void onStartTrackingTouch(SeekBar seekBar) {
-            mDragging = true;
+            // TODO Auto-generated method stub
+
         }
 
         @Override
@@ -122,14 +107,6 @@ public class MediaControllerSmall extends MediaControllerBase implements View.On
         setVisibility(View.INVISIBLE);
     }
 
-    /**
-     * 显示MediaController时，根据当前播放时间，SeekBar的位置进行相应更新<br>
-     * curProgress：SeekBar当前进度<br>
-     * maxProgress：SeekBar最大进度<br>
-     * mPlayer.getCurrentPosition:视频当前播放时间 mPlayer.getDuration:视频总时长<br>
-     * 
-     * curProgress = mPlayer.getCurrentPosition / mPlayer.getDuration * maxProgress
-     */
     @Override
     protected void onTimerTicker() {
         int curTime = mPlayer.getCurrentPosition();
@@ -138,6 +115,8 @@ public class MediaControllerSmall extends MediaControllerBase implements View.On
         if (durTime > 0 && curTime <= durTime) {
             float percentage = ((float) curTime) / durTime;
             updateVideoProgress(percentage);
+            mCurrentTime.setText(PlayerUtils.stringForTime(curTime));
+            mTotalTime.setText(PlayerUtils.stringForTime(durTime));
         }
     }
 
@@ -172,9 +151,7 @@ public class MediaControllerSmall extends MediaControllerBase implements View.On
     private void updateVideoProgress(float percentage) {
         if (percentage >= 0 && percentage <= 1) {
             int progress = (int) (percentage * mProgress.getMax());
-            if (!mDragging) {// 拖动SeekBar时不更新progress
-                mProgress.setProgress(progress);
-            }
+            mProgress.setProgress(progress);
         }
     }
 }

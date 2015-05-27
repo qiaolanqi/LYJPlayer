@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- PlayerView 窗口/全屏模式 -->
+    <declare-styleable name="PlayerView">
+        <attr name="playMode">
+            <enum name="window" value="0" />
+            <enum name="fullscreen" value="1" />
+        </attr>
+    </declare-styleable>
+
+</resources>
