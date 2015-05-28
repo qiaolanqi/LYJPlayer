@@ -3,6 +3,9 @@ package com.liyuejiao.player;
 import java.util.Formatter;
 import java.util.Locale;
 
+import android.content.Context;
+import android.provider.Settings;
+
 public class PlayerUtils {
     private static StringBuilder mFormatBuilder;
     private static Formatter mFormatter;
@@ -25,6 +28,20 @@ public class PlayerUtils {
         } else {
             return mFormatter.format("%02d:%02d", minutes, seconds).toString();
         }
-
     }
+
+    /**
+     * 检查系统是否关闭了自动旋转屏幕功能
+     * @param context
+     * @return 
+     */
+    public static boolean checkSystemGravity(Context context) {
+        int flag = Settings.System.getInt(context.getContentResolver(),
+                Settings.System.ACCELEROMETER_ROTATION, 0);
+        if (flag == 1) {
+            return true;
+        }
+        return false;
+    }
+    
 }

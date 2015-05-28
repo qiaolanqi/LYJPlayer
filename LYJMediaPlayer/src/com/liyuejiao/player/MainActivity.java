@@ -6,15 +6,17 @@ import android.os.Bundle;
 
 public class MainActivity extends Activity {
 
+    private PlayerView mPlayerView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getActionBar().hide();
         setContentView(R.layout.activity_main);
-        PlayerView mVideoView = (PlayerView) findViewById(R.id.playerView);
-      
+        mPlayerView = (PlayerView) findViewById(R.id.playerView);
+
     }
-    
+
     /**
      * 点击“全屏”由小屏->大屏，Activity重新加载，PlayerView重新创建<br>
      * 1.Manifest:android:configChanges="orientation|keyboardHidden|screenSize"<br>
@@ -25,4 +27,15 @@ public class MainActivity extends Activity {
         super.onConfigurationChanged(newConfig);
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mPlayerView.onResume();
+    }
+    
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mPlayerView.onPause();
+    }
 }

@@ -102,6 +102,7 @@ public class VideoView extends SurfaceView implements android.widget.MediaContro
         mTargetState = STATE_IDLE;
     }
 
+    //修正宽高比
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         // Log.i("@@@@", "onMeasure");
@@ -221,6 +222,7 @@ public class VideoView extends SurfaceView implements android.widget.MediaContro
             // 设置一些必要的监听
             mMediaPlayer.setOnPreparedListener(mPreparedListener);
             mMediaPlayer.setOnVideoSizeChangedListener(mSizeChangedListener);
+            mMediaPlayer.setOnSeekCompleteListener(mSeekCompleteListener);
             mDuration = -1;
             mMediaPlayer.setOnCompletionListener(mCompletionListener);
             mMediaPlayer.setOnErrorListener(mErrorListener);
@@ -300,9 +302,6 @@ public class VideoView extends SurfaceView implements android.widget.MediaContro
             if (mOnPreparedListener != null) {
                 mOnPreparedListener.onPrepared(mMediaPlayer);
             }
-            // if (mMediaController != null) {
-            // mMediaController.setEnabled(true);
-            // }
             mVideoWidth = mp.getVideoWidth();
             mVideoHeight = mp.getVideoHeight();
 
@@ -319,15 +318,8 @@ public class VideoView extends SurfaceView implements android.widget.MediaContro
                     // start the video here instead of in the callback.
                     if (mTargetState == STATE_PLAYING) {
                         start();
-                        // if (mMediaController != null) {
-                        // mMediaController.show();
-                        // }
                     } else if (!isPlaying() &&
                             (seekToPosition != 0 || getCurrentPosition() > 0)) {
-                        // if (mMediaController != null) {
-                        // // Show the media controls when we're paused into a video and make 'em stick.
-                        // mMediaController.show(0);
-                        // }
                     }
                 }
             } else {
@@ -337,6 +329,14 @@ public class VideoView extends SurfaceView implements android.widget.MediaContro
                     start();
                 }
             }
+        }
+    };
+
+    private MediaPlayer.OnSeekCompleteListener mSeekCompleteListener = new MediaPlayer.OnSeekCompleteListener() {
+
+        @Override
+        public void onSeekComplete(MediaPlayer mp) {
+
         }
     };
 
