@@ -42,4 +42,10 @@
         android:layout_centerInParent="true"
         android:background="@drawable/ic_media_play" />
 
+    <com.liyuejiao.player.VoiceLightWidget
+        android:id="@+id/voice_light_widget"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true" />
+
 </RelativeLayout>

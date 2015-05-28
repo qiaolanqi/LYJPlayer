@@ -20,7 +20,7 @@ public class PlayerView extends RelativeLayout {
     // 窗口、全屏模式
     private PlayMode mPlayMode;
     private LyjOrientationDetector mLyjOrientationDetector;
-    private Context mContext;
+    private Activity mActivity;
 
     public PlayerView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
@@ -46,7 +46,7 @@ public class PlayerView extends RelativeLayout {
     }
 
     private void init(Context context, AttributeSet attrs, int defStyle) {
-        mContext = context;
+        mActivity = (Activity)context;
         // 获取自定义属性
         TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.PlayerView);
         int playMode = ta.getInt(R.styleable.PlayerView_playMode, 0);
@@ -66,6 +66,8 @@ public class PlayerView extends RelativeLayout {
         mMediaControllerSmall.setMediaPlayer(mMediaPlayerController);
         mMediaControllerLarge.setMediaPlayer(mMediaPlayerController);
 
+        mMediaControllerLarge.setWindow(mActivity.getWindow());
+        
         rootView.removeAllViews();
         removeAllViews();
         addView(mVideoView);
@@ -90,7 +92,6 @@ public class PlayerView extends RelativeLayout {
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
         if (mPlayMode == PlayMode.PLAYMODE_WINDOW) {
-            Log.d("lyj", "55555555555======"+mMediaControllerSmall.getVisibility());
             return mMediaControllerSmall.dispatchTouchEvent(ev);
         } else if (mPlayMode == PlayMode.PLAYMODE_FULLSCREEN) {
             return mMediaControllerLarge.dispatchTouchEvent(ev);
@@ -162,7 +163,7 @@ public class PlayerView extends RelativeLayout {
         public void onRequestPlayMode(PlayMode requestPlayMode) {
             // 小窗口上的全屏按钮旋转屏幕
             requestPlayMode(requestPlayMode);
-            ((Activity)mContext).setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+            mActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         }
 
     };

@@ -11,6 +11,7 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        SystemUtils.loadScreenInfo(this);
         getActionBar().hide();
         setContentView(R.layout.activity_main);
         mPlayerView = (PlayerView) findViewById(R.id.playerView);

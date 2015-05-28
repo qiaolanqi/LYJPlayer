@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.Window;
 import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
@@ -14,6 +15,7 @@ public class MediaControllerLarge extends MediaControllerBase implements View.On
     private SeekBar mProgress;
     private TextView mCurrentTime;
     private TextView mTotalTime;
+   
 
     public MediaControllerLarge(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
@@ -45,6 +47,7 @@ public class MediaControllerLarge extends MediaControllerBase implements View.On
         }
         mCurrentTime = (TextView) findViewById(R.id.mediacontroller_time);
         mTotalTime = (TextView) findViewById(R.id.mediacontroller_total);
+        mVoiceLightWidget = (VoiceLightWidget) findViewById(R.id.voice_light_widget);
     }
 
     @Override
@@ -154,4 +157,5 @@ public class MediaControllerLarge extends MediaControllerBase implements View.On
             mProgress.setProgress(progress);
         }
     }
+
 }

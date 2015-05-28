@@ -4,7 +4,8 @@ import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
 import android.util.AttributeSet;
-import android.util.Log;
+import android.view.Display;
+import android.view.GestureDetector;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -53,6 +54,8 @@ public abstract class MediaControllerBase extends FrameLayout {
     private ImageButton mNextButton;
     private ImageButton mPrevButton;
     protected LayoutInflater mLayoutInflater;
+    private GestureDetector mGestureDetector;
+    protected VoiceLightWidget mVoiceLightWidget;
 
     public MediaControllerBase(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
@@ -71,11 +74,37 @@ public abstract class MediaControllerBase extends FrameLayout {
 
     private void init() {
         mLayoutInflater = LayoutInflater.from(getContext());
+        mGestureDetector = new GestureDetector(getContext(), new GestureDetector.SimpleOnGestureListener() {
+            @Override
+            public boolean onSingleTapUp(MotionEvent e) {
+                toggle();
+                return false;
+            }
+
+            @Override
+            public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+                float mOldX = e1.getX(), mOldY = e1.getY();
+                int y = (int) e2.getRawY();
+                int windowWidth = SystemUtils.getScreenWidth();
+                int windowHeight = SystemUtils.getScreenHeight();
+                if (mVoiceLightWidget != null) {
+                    if (mOldX > windowWidth * 4.0 / 5)// 右边滑动
+                        mVoiceLightWidget.onVolumeSlide((mOldY - y) / windowHeight);
+                    else if (mOldX < windowWidth / 5.0)// 左边滑动
+                        mVoiceLightWidget.onBrightnessSlide((mOldY - y) / windowHeight, mWindow);
+                }
+                return super.onScroll(e1, e2, distanceX, distanceY);
+            }
+        });
     }
 
     public void setMediaPlayer(MediaPlayerControl player) {
         mPlayer = player;
         updatePausePlay();
+    }
+
+    public void setWindow(Window window) {
+        mWindow = window;
     }
 
     /**
@@ -155,7 +184,6 @@ public abstract class MediaControllerBase extends FrameLayout {
                 break;
             case MSG_TIMER_TICKER:
                 onTimerTicker();
-                Log.d("lyj", "onTimerTicker");
                 sendEmptyMessageDelayed(MSG_TIMER_TICKER, TIMER_TICKER_INTERVAL);
             }
         }
@@ -191,30 +219,6 @@ public abstract class MediaControllerBase extends FrameLayout {
 
     }
 
-//    private int setProgress() {
-//        if (mPlayer == null || mDragging) {
-//            return 0;
-//        }
-//        int position = mPlayer.getCurrentPosition();
-//        int duration = mPlayer.getDuration();
-//        if (mProgress != null) {
-//            if (duration > 0) {
-//                // use long to avoid overflow
-//                long pos = 1000L * position / duration;
-//                mProgress.setProgress((int) pos);
-//            }
-//            int percent = mPlayer.getBufferPercentage();
-//            mProgress.setSecondaryProgress(percent * 10);
-//        }
-//
-//        if (mEndTime != null)
-//            mEndTime.setText(stringForTime(duration));
-//        if (mCurrentTime != null)
-//            mCurrentTime.setText(stringForTime(position));
-//
-//        return position;
-//    }
-
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
         return super.dispatchTouchEvent(ev);
@@ -227,10 +231,16 @@ public abstract class MediaControllerBase extends FrameLayout {
 
             break;
         case MotionEvent.ACTION_UP:
-            toggle();
+            if (mVoiceLightWidget != null) {
+                mVoiceLightWidget.onGestureFinish();
+            }
             break;
         default:
             break;
+        }
+
+        if (mGestureDetector != null) {
+            mGestureDetector.onTouchEvent(event);
         }
         return true;
     }
