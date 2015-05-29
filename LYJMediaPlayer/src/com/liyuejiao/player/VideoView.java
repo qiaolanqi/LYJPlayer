@@ -298,7 +298,7 @@ public class VideoView extends SurfaceView implements android.widget.MediaContro
         public void onPrepared(MediaPlayer mp) {
             mCurrentState = STATE_PREPARED;
             mCanPause = mCanSeekBack = mCanSeekForward = true;
-
+            
             if (mOnPreparedListener != null) {
                 mOnPreparedListener.onPrepared(mMediaPlayer);
             }

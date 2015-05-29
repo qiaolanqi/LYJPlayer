@@ -1,7 +1,11 @@
-package com.liyuejiao.player;
+package com.liyuejiao.player.online;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import com.liyuejiao.player.R;
+import com.liyuejiao.player.R.id;
+import com.liyuejiao.player.R.layout;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -10,17 +14,17 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-public class LocalVideoAdapter extends BaseAdapter {
+public class OnlineAdapter extends BaseAdapter {
 
     private Context mContext;
-    private List<LocalVideo> mVideoList;
+    private List<OnlineVideo> mVideoList;
 
-    public LocalVideoAdapter(Context context) {
+    public OnlineAdapter(Context context) {
         mContext = context;
-        mVideoList = new ArrayList<LocalVideo>();
+        mVideoList = new ArrayList<OnlineVideo>();
     }
 
-    public void updateList(List<LocalVideo> videoList) {
+    public void updateList(List<OnlineVideo> videoList) {
         if (videoList != null) {
             mVideoList.clear();
             mVideoList.addAll(videoList);
@@ -34,7 +38,7 @@ public class LocalVideoAdapter extends BaseAdapter {
     }
 
     @Override
-    public LocalVideo getItem(int position) {
+    public OnlineVideo getItem(int position) {
         return mVideoList == null ? null : mVideoList.get(position);
     }
 
@@ -54,7 +58,7 @@ public class LocalVideoAdapter extends BaseAdapter {
             holder = (ViewHolder) convertView.getTag();
         }
 
-        LocalVideo video = getItem(position);
+        OnlineVideo video = getItem(position);
         if (video != null) {
             holder.populateViews(video);
         }
@@ -70,9 +74,9 @@ public class LocalVideoAdapter extends BaseAdapter {
             mVideoSize = (TextView) root.findViewById(R.id.local_video_size);
         }
 
-        public void populateViews(LocalVideo video) {
+        public void populateViews(OnlineVideo video) {
             mVideoName.setText(video.name);
-            mVideoSize.setText(Float.toString(video.size));
+            mVideoSize.setText(video.uri);
         }
     }
 }

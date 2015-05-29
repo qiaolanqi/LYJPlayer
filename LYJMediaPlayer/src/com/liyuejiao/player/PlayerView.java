@@ -1,12 +1,15 @@
 package com.liyuejiao.player;
 
+import com.liyuejiao.player.widget.LyjOrientationDetector;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.content.res.TypedArray;
+import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnPreparedListener;
 import android.net.Uri;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.ViewGroup;
@@ -46,7 +49,7 @@ public class PlayerView extends RelativeLayout {
     }
 
     private void init(Context context, AttributeSet attrs, int defStyle) {
-        mActivity = (Activity)context;
+        mActivity = (Activity) context;
         // 获取自定义属性
         TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.PlayerView);
         int playMode = ta.getInt(R.styleable.PlayerView_playMode, 0);
@@ -67,7 +70,7 @@ public class PlayerView extends RelativeLayout {
         mMediaControllerLarge.setMediaPlayer(mMediaPlayerController);
 
         mMediaControllerLarge.setWindow(mActivity.getWindow());
-        
+
         rootView.removeAllViews();
         removeAllViews();
         addView(mVideoView);
@@ -79,10 +82,12 @@ public class PlayerView extends RelativeLayout {
             mMediaControllerLarge.hide();
         }
         // 设置播放路径
-        mVideoView.setVideoURI(Uri.parse("android.resource://"
-                + context.getPackageName() + "/" + R.raw.videoviewdemo));
+        // mVideoView.setVideoURI(Uri.parse("android.resource://"
+        // + context.getPackageName() + "/" + R.raw.videoviewdemo));
         // 开始播放
-        mVideoView.start();
+        // mVideoView.start();
+        //设置VideoView回调函数
+        mVideoView.setOnPreparedListener(mOnPreparedListener);
 
         mLyjOrientationDetector = new LyjOrientationDetector(context,
                 LyjOrientationDetector.SCREEN_ORIENTATION_PORTRAIT_NORMAL);
@@ -100,6 +105,17 @@ public class PlayerView extends RelativeLayout {
         }
     }
 
+    /************************************ VideoView的回调函数 ****************************************************/
+    //MediaPlayer-->回调给VideoView-->回调给PlayerView
+    private OnPreparedListener mOnPreparedListener = new OnPreparedListener() {
+        
+        @Override
+        public void onPrepared(MediaPlayer mp) {
+            mVideoView.start();
+        }
+    };
+    
+    
     /************************************ MediaController的回调函数 ****************************************************/
     private MediaPlayerControl mMediaPlayerController = new MediaPlayerControl() {
 
@@ -201,6 +217,11 @@ public class PlayerView extends RelativeLayout {
             mMediaControllerLarge.hide();
         }
         mPlayMode = requestPlayMode;
+    }
+
+    /************************************ PUBLIC ****************************************************/
+    public void setVideoPath(String path) {
+        mVideoView.setVideoPath(path);
     }
 
 }

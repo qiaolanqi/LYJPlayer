@@ -1,5 +1,8 @@
 package com.liyuejiao.player;
 
+import com.liyuejiao.player.util.SystemUtils;
+import com.liyuejiao.player.widget.VoiceLightWidget;
+
 import android.content.Context;
 import android.os.Handler;
 import android.os.Message;

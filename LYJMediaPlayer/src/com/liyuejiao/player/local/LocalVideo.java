@@ -1,4 +1,4 @@
-package com.liyuejiao.player;
+package com.liyuejiao.player.local;
 
 public class LocalVideo {
     public String name;

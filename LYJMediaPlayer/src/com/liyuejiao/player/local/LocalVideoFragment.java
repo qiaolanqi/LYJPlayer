@@ -1,4 +1,4 @@
-package com.liyuejiao.player;
+package com.liyuejiao.player.local;
 
 import java.util.List;
 
@@ -11,7 +11,12 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-import com.liyuejiao.player.VideoScanner.OnScanListener;
+import com.liyuejiao.player.PlayerActivity;
+import com.liyuejiao.player.R;
+import com.liyuejiao.player.R.id;
+import com.liyuejiao.player.R.layout;
+import com.liyuejiao.player.util.VideoScanner;
+import com.liyuejiao.player.util.VideoScanner.OnScanListener;
 
 public class LocalVideoFragment extends Fragment {
 
@@ -58,7 +63,9 @@ public class LocalVideoFragment extends Fragment {
 
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            LocalVideo localVideo = mLocalVideoAdapter.getItem(position);
             Intent intent = new Intent(getActivity(), PlayerActivity.class);
+            intent.putExtra("path", localVideo.path);
             startActivity(intent);
         }
     };

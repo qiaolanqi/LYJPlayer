@@ -1,4 +1,4 @@
-package com.liyuejiao.player;
+package com.liyuejiao.player.util;
 
 import android.app.Activity;
 import android.util.DisplayMetrics;

@@ -31,6 +31,8 @@
             android:name=".PlayerActivity"
             android:configChanges="orientation|keyboardHidden|screenSize" >
         </activity>
+        <activity android:name=".WebVideoActivity" >
+        </activity>
         <!-- Don't forgot InitActivity -->
         <activity
             android:name="io.vov.vitamio.activity.InitActivity"

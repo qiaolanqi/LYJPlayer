@@ -1,9 +1,11 @@
-package com.liyuejiao.player;
+package com.liyuejiao.player.util;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+
+import com.liyuejiao.player.local.LocalVideo;
 
 import android.content.Context;
 import android.os.AsyncTask;

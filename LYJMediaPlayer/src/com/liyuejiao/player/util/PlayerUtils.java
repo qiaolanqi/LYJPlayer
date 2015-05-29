@@ -1,4 +1,4 @@
-package com.liyuejiao.player;
+package com.liyuejiao.player.util;
 
 import java.util.Formatter;
 import java.util.Locale;

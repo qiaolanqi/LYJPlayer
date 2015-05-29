@@ -8,6 +8,10 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.RadioButton;
 
+import com.liyuejiao.player.local.LocalVideoFragment;
+import com.liyuejiao.player.online.OnlineVideoFragment;
+import com.liyuejiao.player.util.SystemUtils;
+
 public class MainActivity extends FragmentActivity implements OnClickListener {
 
     private ViewPager mViewPager;

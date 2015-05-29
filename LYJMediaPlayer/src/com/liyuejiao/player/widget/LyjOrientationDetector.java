@@ -1,4 +1,7 @@
-package com.liyuejiao.player;
+package com.liyuejiao.player.widget;
+
+import com.liyuejiao.player.PlayMode;
+import com.liyuejiao.player.util.PlayerUtils;
 
 import android.app.Activity;
 import android.content.Context;

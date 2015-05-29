@@ -11,7 +11,10 @@ public class PlayerActivity extends FragmentActivity {
         super.onCreate(savedInstanceState);
         getActionBar().hide();
         setContentView(R.layout.player);
+        
+        String path = getIntent().getExtras().getString("path");
         mPlayerView = (PlayerView) findViewById(R.id.playerView);
+        mPlayerView.setVideoPath(path);
     }
 
     @Override

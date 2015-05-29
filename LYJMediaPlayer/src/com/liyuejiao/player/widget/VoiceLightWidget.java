@@ -1,4 +1,9 @@
-package com.liyuejiao.player;
+package com.liyuejiao.player.widget;
+
+import com.liyuejiao.player.R;
+import com.liyuejiao.player.R.drawable;
+import com.liyuejiao.player.R.id;
+import com.liyuejiao.player.R.layout;
 
 import android.content.Context;
 import android.media.AudioManager;
@@ -37,7 +42,7 @@ public class VoiceLightWidget extends RelativeLayout {
      * 
      * @param percent
      */
-    void onVolumeSlide(float percent) {
+    public void onVolumeSlide(float percent) {
         if (mVolume == -1) {
             mVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
             if (mVolume < 0)
@@ -70,7 +75,7 @@ public class VoiceLightWidget extends RelativeLayout {
      * @param percent
      * @param mWindow
      */
-    void onBrightnessSlide(float percent, Window window) {
+    public void onBrightnessSlide(float percent, Window window) {
         if (mBrightness < 0) {
             mBrightness = window.getAttributes().screenBrightness;
             if (mBrightness <= 0.00f)
