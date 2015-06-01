@@ -8,9 +8,9 @@ public interface MediaPlayerControl {
 
     void pause();
 
-    int getDuration();
+    long getDuration();
 
-    int getCurrentPosition();
+    long getCurrentPosition();
 
     void seekTo(int pos);
 

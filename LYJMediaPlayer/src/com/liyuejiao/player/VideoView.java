@@ -1,18 +1,22 @@
 package com.liyuejiao.player;
 
+import io.vov.vitamio.MediaPlayer;
+import io.vov.vitamio.MediaPlayer.OnCompletionListener;
+import io.vov.vitamio.MediaPlayer.OnErrorListener;
+import io.vov.vitamio.MediaPlayer.OnInfoListener;
+import io.vov.vitamio.Vitamio;
+
 import java.io.IOException;
 import java.util.Map;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.PixelFormat;
 import android.media.AudioManager;
-import android.media.MediaPlayer;
-import android.media.MediaPlayer.OnCompletionListener;
-import android.media.MediaPlayer.OnErrorListener;
-import android.media.MediaPlayer.OnInfoListener;
 import android.net.Uri;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -20,20 +24,18 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.view.accessibility.AccessibilityEvent;
-import android.view.accessibility.AccessibilityNodeInfo;
 
 /**
  * Displays a video file. The VideoView class can load images from various sources (such as resources or content
  * providers), takes care of computing its measurement from the video so that it can be used in any layout manager, and
  * provides various display options such as scaling and tinting.
  */
-public class VideoView extends SurfaceView implements android.widget.MediaController.MediaPlayerControl {
+public class VideoView extends SurfaceView {
     private String TAG = "VideoView";
     // settable by the client
     private Uri mUri;
     private Map<String, String> mHeaders;
-    private int mDuration;
+    private long mDuration;
 
     // 播放器所有的状态
     private static final int STATE_ERROR = -1;
@@ -55,7 +57,7 @@ public class VideoView extends SurfaceView implements android.widget.MediaContro
     private int mVideoHeight;   // 视频高度
     private int mSurfaceWidth;  // Surface宽度 在SurfaceHolder.Callback.surfaceChanged() 中可以得到具体大小
     private int mSurfaceHeight; // Surface高度
-    private OnCompletionListener mOnCompletionListener;
+    private MediaPlayer.OnCompletionListener mOnCompletionListener;
     private MediaPlayer.OnPreparedListener mOnPreparedListener;
     private int mCurrentBufferPercentage;
     private OnErrorListener mOnErrorListener;
@@ -68,28 +70,31 @@ public class VideoView extends SurfaceView implements android.widget.MediaContro
 
     public VideoView(Context context) {
         super(context);
-        mContext = context;
-        initVideoView();
+        initVideoView(context);
     }
 
     public VideoView(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
-        mContext = context;
-        initVideoView();
+        initVideoView(context);
     }
 
     public VideoView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        mContext = context;
-        initVideoView();
+        initVideoView(context);
     }
 
     /**
      * 进行一些必要信息的初始化设置
+     * 
+     * @param context
      */
-    private void initVideoView() {
+    private void initVideoView(Context context) {
+        mContext = context;
         mVideoWidth = 0;
         mVideoHeight = 0;
+        // 注意：仅支持ARMv7的CPU;
+        // 使用RGBA_8888渲染视频。必须添加：getHolder().setFormat(PixelFormat.RGBA_8888)。
+        getHolder().setFormat(PixelFormat.RGBA_8888); // PixelFormat.RGB_565
         // 通过SurfaceHolder去控制SurfaceView
         getHolder().addCallback(mSHCallback);
         getHolder().setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
@@ -100,9 +105,10 @@ public class VideoView extends SurfaceView implements android.widget.MediaContro
 
         mCurrentState = STATE_IDLE;
         mTargetState = STATE_IDLE;
+        ((Activity) mContext).setVolumeControlStream(AudioManager.STREAM_MUSIC);
     }
 
-    //修正宽高比
+    // 修正宽高比
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         // Log.i("@@@@", "onMeasure");
@@ -123,18 +129,6 @@ public class VideoView extends SurfaceView implements android.widget.MediaContro
         }
         // Log.i("@@@@@@@@@@", "setting size: " + width + 'x' + height);
         setMeasuredDimension(width, height);
-    }
-
-    @Override
-    public void onInitializeAccessibilityEvent(AccessibilityEvent event) {
-        super.onInitializeAccessibilityEvent(event);
-        event.setClassName(VideoView.class.getName());
-    }
-
-    @Override
-    public void onInitializeAccessibilityNodeInfo(AccessibilityNodeInfo info) {
-        super.onInitializeAccessibilityNodeInfo(info);
-        info.setClassName(VideoView.class.getName());
     }
 
     public int resolveAdjustedSize(int desiredSize, int measureSpec) {
@@ -203,7 +197,7 @@ public class VideoView extends SurfaceView implements android.widget.MediaContro
     }
 
     private void openVideo() {
-        if (mUri == null || mSurfaceHolder == null) {
+        if (mUri == null || mSurfaceHolder == null || !Vitamio.isInitialized(mContext)) {
             // not ready for playback just yet, will try again later
             return;
         }
@@ -218,7 +212,7 @@ public class VideoView extends SurfaceView implements android.widget.MediaContro
         release(false);
         try {
             // 创建一个MediaPlayer
-            mMediaPlayer = new MediaPlayer();
+            mMediaPlayer = new MediaPlayer(mContext);
             // 设置一些必要的监听
             mMediaPlayer.setOnPreparedListener(mPreparedListener);
             mMediaPlayer.setOnVideoSizeChangedListener(mSizeChangedListener);
@@ -234,7 +228,7 @@ public class VideoView extends SurfaceView implements android.widget.MediaContro
             // 让SurfaceView进行画面显示
             mMediaPlayer.setDisplay(mSurfaceHolder);
             // 设置音频类型
-            mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+            // mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             // 播放时屏幕常亮
             mMediaPlayer.setScreenOnWhilePlaying(true);
             mMediaPlayer.prepareAsync();
@@ -298,7 +292,7 @@ public class VideoView extends SurfaceView implements android.widget.MediaContro
         public void onPrepared(MediaPlayer mp) {
             mCurrentState = STATE_PREPARED;
             mCanPause = mCanSeekBack = mCanSeekForward = true;
-            
+
             if (mOnPreparedListener != null) {
                 mOnPreparedListener.onPrepared(mMediaPlayer);
             }
@@ -550,14 +544,7 @@ public class VideoView extends SurfaceView implements android.widget.MediaContro
         return super.onKeyDown(keyCode, event);
     }
 
-    // private void toggleMediaControlsVisiblity() {
-    // if (mMediaController.isShowing()) {
-    // mMediaController.hide();
-    // } else {
-    // mMediaController.show();
-    // }
-    // }
-
+    /**************************** 调用封装的MediaPlayer中的方法，最后调用native方法 ********************************************/
     public void start() {
         if (isInPlaybackState()) {
             mMediaPlayer.start();
@@ -585,7 +572,7 @@ public class VideoView extends SurfaceView implements android.widget.MediaContro
     }
 
     // cache duration as mDuration for faster access
-    public int getDuration() {
+    public long getDuration() {
         if (isInPlaybackState()) {
             if (mDuration > 0) {
                 return mDuration;
@@ -597,7 +584,7 @@ public class VideoView extends SurfaceView implements android.widget.MediaContro
         return mDuration;
     }
 
-    public int getCurrentPosition() {
+    public long getCurrentPosition() {
         if (isInPlaybackState()) {
             return mMediaPlayer.getCurrentPosition();
         }
@@ -641,11 +628,4 @@ public class VideoView extends SurfaceView implements android.widget.MediaContro
     public boolean canSeekForward() {
         return mCanSeekForward;
     }
-
-    @Override
-    public int getAudioSessionId() {
-        // TODO Auto-generated method stub
-        return 0;
-    }
-
 }

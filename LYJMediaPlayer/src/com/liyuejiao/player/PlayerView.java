@@ -1,19 +1,18 @@
 package com.liyuejiao.player;
 
-import com.liyuejiao.player.widget.LyjOrientationDetector;
-
+import io.vov.vitamio.MediaPlayer;
+import io.vov.vitamio.MediaPlayer.OnPreparedListener;
 import android.app.Activity;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.content.res.TypedArray;
-import android.media.MediaPlayer;
-import android.media.MediaPlayer.OnPreparedListener;
-import android.net.Uri;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
+
+import com.liyuejiao.player.widget.LyjOrientationDetector;
 
 public class PlayerView extends RelativeLayout {
 
@@ -146,12 +145,12 @@ public class PlayerView extends RelativeLayout {
         }
 
         @Override
-        public int getDuration() {
+        public long getDuration() {
             return mVideoView.getDuration();
         }
 
         @Override
-        public int getCurrentPosition() {
+        public long getCurrentPosition() {
             return mVideoView.getCurrentPosition();
         }
 

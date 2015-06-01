@@ -15,12 +15,12 @@ public class PlayerUtils {
         mFormatter = new Formatter(mFormatBuilder, Locale.getDefault());
     }
 
-    public static String stringForTime(int timeMs) {
-        int totalSeconds = timeMs / 1000;
+    public static String stringForTime(long timeMs) {
+        long totalSeconds = timeMs / 1000;
 
-        int seconds = totalSeconds % 60;
-        int minutes = (totalSeconds / 60) % 60;
-        int hours = totalSeconds / 3600;
+        long seconds = totalSeconds % 60;
+        long minutes = (totalSeconds / 60) % 60;
+        long hours = totalSeconds / 3600;
 
         mFormatBuilder.setLength(0);
         if (hours > 0) {

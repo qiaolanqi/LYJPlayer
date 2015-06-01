@@ -115,8 +115,8 @@ public class MediaControllerLarge extends MediaControllerBase implements View.On
 
     @Override
     protected void onTimerTicker() {
-        int curTime = mPlayer.getCurrentPosition();
-        int durTime = mPlayer.getDuration();
+        long curTime = mPlayer.getCurrentPosition();
+        long durTime = mPlayer.getDuration();
 
         if (durTime > 0 && curTime <= durTime) {
             float percentage = ((float) curTime) / durTime;
