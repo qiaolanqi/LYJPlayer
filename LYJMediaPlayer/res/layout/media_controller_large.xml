@@ -5,7 +5,43 @@
     android:orientation="vertical" >
 
     <LinearLayout
-        android:id="@+id/linearLayout1"
+        android:id="@+id/mediacontroller_top_ll"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:background="@color/white"
+        android:gravity="center_vertical"
+        android:orientation="horizontal" >
+
+        <!-- 返回 -->
+
+        <RelativeLayout
+            android:id="@+id/mediacontroller_back"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:clickable="true" >
+
+            <ImageView
+                android:id="@+id/iv_back"
+                android:layout_width="@dimen/controller_largestyle_back_width"
+                android:layout_height="@dimen/controller_largestyle_back_height"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="10dp"
+                android:background="@drawable/app_back_normal" />
+            <!-- 标题 -->
+
+            <TextView
+                android:id="@+id/tv_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="10dp"
+                android:layout_toRightOf="@id/iv_back"
+                android:textColor="@color/black" />
+        </RelativeLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/mediacontroller_bottom_ll"
         android:layout_width="match_parent"
         android:layout_height="40dp"
         android:layout_alignParentBottom="true"
@@ -34,6 +70,7 @@
             android:text="00:00"
             android:textColor="@color/white" />
     </LinearLayout>
+    <!-- 暂停，播放 -->
 
     <ImageButton
         android:id="@+id/mediacontroller_pause"
@@ -41,11 +78,13 @@
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:background="@drawable/ic_media_play" />
+    <!-- 亮度、声音 -->
 
     <com.liyuejiao.player.widget.VoiceLightWidget
         android:id="@+id/voice_light_widget"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true" />
+        android:layout_centerInParent="true"
+        android:visibility="gone" />
 
 </RelativeLayout>

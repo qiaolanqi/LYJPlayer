@@ -8,6 +8,7 @@ import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+import com.liyuejiao.player.util.Constant;
 import com.liyuejiao.player.util.FileUtils;
 import com.liyuejiao.player.util.SystemUtils;
 
@@ -37,7 +38,7 @@ public class WebVideoActivity extends FragmentActivity {
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
                 if (FileUtils.isVideoOrAudio(url)) {
                     Intent intent = new Intent(WebVideoActivity.this, PlayerActivity.class);
-                    intent.putExtra("path", url);
+                    intent.putExtra(Constant.KEY_PATH, url);
                     startActivity(intent);
                     return true;
                 }

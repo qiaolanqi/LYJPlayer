@@ -25,4 +25,7 @@ public interface MediaPlayerControl {
     boolean canSeekForward();
     
     void onRequestPlayMode(PlayMode requestPlayMode);
+
+    void onBackPressed(PlayMode playMode);
+
 }

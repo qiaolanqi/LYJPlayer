@@ -113,7 +113,7 @@ public class MediaControllerSmall extends MediaControllerBase implements View.On
 
     /**************** MediaController显示、隐藏 *******************/
     @Override
-    protected void onShow() {
+    protected void onShow(int what) {
         setVisibility(View.VISIBLE);
     }
 

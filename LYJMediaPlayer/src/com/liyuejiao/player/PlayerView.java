@@ -12,9 +12,9 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.view.WindowManager;
 import android.widget.RelativeLayout;
 
+import com.liyuejiao.player.local.LocalVideo;
 import com.liyuejiao.player.widget.LyjOrientationDetector;
 
 public class PlayerView extends RelativeLayout {
@@ -30,6 +30,9 @@ public class PlayerView extends RelativeLayout {
     private Window mWindow;
     private android.view.ViewGroup.LayoutParams mLayoutParamWindowMode;
     private LayoutParams mLayoutParamFullScreenMode;
+
+    private OnPlayCallbackListener mOnPlayCallbackListener;
+    private LocalVideo mLocalVideo;
 
     public PlayerView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
@@ -83,7 +86,7 @@ public class PlayerView extends RelativeLayout {
         addView(mVideoView);
         // 设置黑色背景，有的视频尺寸大小不能平铺满窗口
         setBackgroundColor(Color.BLACK);
-        
+
         if (mPlayMode == PlayMode.PLAYMODE_WINDOW) {
             addView(mMediaControllerSmall);
             mMediaControllerSmall.hide();
@@ -121,12 +124,13 @@ public class PlayerView extends RelativeLayout {
     }
 
     /************************************ VideoView的回调函数 ****************************************************/
-    // MediaPlayer-->回调给VideoView-->回调给PlayerView
+    // OnPreparedListener:onPrepared方法  MediaPlayer-->回调给VideoView-->回调给PlayerView
     private OnPreparedListener mOnPreparedListener = new OnPreparedListener() {
 
         @Override
         public void onPrepared(MediaPlayer mp) {
-            mVideoView.start();
+            mMediaPlayerController.start();
+            mMediaControllerLarge.updateVideoTitle(mLocalVideo.name);
         }
     };
 
@@ -191,9 +195,23 @@ public class PlayerView extends RelativeLayout {
 
         @Override
         public void onRequestPlayMode(PlayMode requestPlayMode) {
-            // 小窗口上的全屏按钮旋转屏幕
+            // 全屏按钮：窗口->全屏(和大屏onBackPressed反操作)
             requestPlayMode(requestPlayMode);
             mActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        }
+
+        @Override
+        public void onBackPressed(PlayMode playMode) {
+            if (playMode == PlayMode.PLAYMODE_FULLSCREEN) {
+                // 返回:全屏->窗口(和小屏onRequestPlayMode反操作)
+                requestPlayMode(PlayMode.PLAYMODE_WINDOW);
+                mActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+            } else {
+                // 返回:窗口->退出播放
+                if (mOnPlayCallbackListener != null) {
+                    mOnPlayCallbackListener.onBackPressed();
+                }
+            }
         }
 
     };
@@ -243,6 +261,14 @@ public class PlayerView extends RelativeLayout {
     /************************************ PUBLIC ****************************************************/
     public void setVideoPath(String path) {
         mVideoView.setVideoPath(path);
+    }
+
+    public void setOnPlayCallbackListener(OnPlayCallbackListener l) {
+        mOnPlayCallbackListener = l;
+    }
+
+    public void setVideoItem(LocalVideo localVideo) {
+        mLocalVideo = localVideo;
     }
 
 }

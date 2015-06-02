@@ -1,12 +1,9 @@
 package com.liyuejiao.player.widget;
 
-import com.liyuejiao.player.R;
-import com.liyuejiao.player.R.drawable;
-import com.liyuejiao.player.R.id;
-import com.liyuejiao.player.R.layout;
-
 import android.content.Context;
 import android.media.AudioManager;
+import android.os.Handler;
+import android.os.Message;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,7 +13,13 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
+import com.liyuejiao.player.R;
+
 public class VoiceLightWidget extends RelativeLayout {
+
+    private final int MSG_HIDE = 0;
+    private final int MSG_SHOW = 1;
+    private final long DEFAULT_DELAY_TIME = 1000;
 
     private View mVolumeBrightnessLayout;
     private ImageView mOperationBg;
@@ -67,6 +70,8 @@ public class VoiceLightWidget extends RelativeLayout {
         lp.width = findViewById(R.id.operation_full).getLayoutParams().width
                 * index / mMaxVolume;
         mOperationPercent.setLayoutParams(lp);
+        
+        show();
     }
 
     /**
@@ -98,11 +103,39 @@ public class VoiceLightWidget extends RelativeLayout {
         ViewGroup.LayoutParams lp = mOperationPercent.getLayoutParams();
         lp.width = (int) (findViewById(R.id.operation_full).getLayoutParams().width * lpa.screenBrightness);
         mOperationPercent.setLayoutParams(lp);
+        
+        show();
     }
 
     public void onGestureFinish() {
         mVolume = -1;
         mBrightness = -1;
     }
+
+    /**
+     * 当声音或亮度变化了显示
+     */
+    private void show() {
+        mHandler.obtainMessage(MSG_SHOW).sendToTarget();
+        Message msgHide = mHandler.obtainMessage(MSG_HIDE);
+        mHandler.sendMessageDelayed(msgHide, DEFAULT_DELAY_TIME);
+    }
+
+    private Handler mHandler = new Handler() {
+
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+            case MSG_HIDE:
+                setVisibility(View.GONE);
+                break;
+            case MSG_SHOW:
+                setVisibility(View.VISIBLE);
+                break;
+            default:
+                break;
+            }
+        }
+    };
 
 }

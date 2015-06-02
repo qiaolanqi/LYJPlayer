@@ -14,6 +14,7 @@ import android.widget.ListView;
 
 import com.liyuejiao.player.PlayerActivity;
 import com.liyuejiao.player.R;
+import com.liyuejiao.player.util.Constant;
 import com.liyuejiao.player.util.VideoScanner;
 import com.liyuejiao.player.util.VideoScanner.OnScanListener;
 
@@ -67,7 +68,8 @@ public class LocalVideoFragment extends Fragment {
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             LocalVideo localVideo = mLocalVideoAdapter.getItem(position);
             Intent intent = new Intent(getActivity(), PlayerActivity.class);
-            intent.putExtra("path", localVideo.path);
+            intent.putExtra(Constant.KEY_TITLE, localVideo.name);
+            intent.putExtra(Constant.KEY_PATH, localVideo.path);
             startActivity(intent);
         }
     };

@@ -1,5 +1,6 @@
 package com.liyuejiao.player;
 
+import com.liyuejiao.player.util.Constant;
 import com.liyuejiao.player.util.SystemUtils;
 import com.liyuejiao.player.widget.VoiceLightWidget;
 
@@ -90,6 +91,7 @@ public abstract class MediaControllerBase extends FrameLayout {
                 int windowWidth = SystemUtils.getScreenWidth();
                 int windowHeight = SystemUtils.getScreenHeight();
                 if (mVoiceLightWidget != null) {
+                    onShow(Constant.TYPE_WIDGET);
                     if (mOldX > windowWidth * 4.0 / 5)// 右边滑动
                         mVoiceLightWidget.onVolumeSlide((mOldY - y) / windowHeight);
                     else if (mOldX < windowWidth / 5.0)// 左边滑动
@@ -182,7 +184,7 @@ public abstract class MediaControllerBase extends FrameLayout {
             case SHOW_PROGRESS:
                 mShowing = true;
                 startTimerTicker();
-                onShow();
+                onShow(Constant.TYPE_CONTROLLER);
                 break;
             case MSG_TIMER_TICKER:
                 onTimerTicker();
@@ -191,7 +193,7 @@ public abstract class MediaControllerBase extends FrameLayout {
         }
     };
 
-    protected abstract void onShow();
+    protected abstract void onShow(int what);
 
     protected abstract void onHide();
 

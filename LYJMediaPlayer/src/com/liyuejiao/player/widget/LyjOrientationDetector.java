@@ -59,6 +59,10 @@ public class LyjOrientationDetector extends OrientationEventListener {
         }
     }
 
+    /**
+     * 强制旋转屏幕
+     * @param screenOrientation
+     */
     public void doScreenOrientationRotate(int screenOrientation) {
         Activity activity = (Activity) mContext;
         switch (screenOrientation) {
