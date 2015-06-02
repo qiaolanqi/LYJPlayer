@@ -6,10 +6,13 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.content.res.TypedArray;
+import android.graphics.Color;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.RelativeLayout;
 
 import com.liyuejiao.player.widget.LyjOrientationDetector;
@@ -22,7 +25,11 @@ public class PlayerView extends RelativeLayout {
     // 窗口、全屏模式
     private PlayMode mPlayMode;
     private LyjOrientationDetector mLyjOrientationDetector;
+
     private Activity mActivity;
+    private Window mWindow;
+    private android.view.ViewGroup.LayoutParams mLayoutParamWindowMode;
+    private LayoutParams mLayoutParamFullScreenMode;
 
     public PlayerView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
@@ -68,11 +75,15 @@ public class PlayerView extends RelativeLayout {
         mMediaControllerSmall.setMediaPlayer(mMediaPlayerController);
         mMediaControllerLarge.setMediaPlayer(mMediaPlayerController);
 
-        mMediaControllerLarge.setWindow(mActivity.getWindow());
+        mWindow = mActivity.getWindow();
+        mMediaControllerLarge.setWindow(mWindow);
 
         rootView.removeAllViews();
         removeAllViews();
         addView(mVideoView);
+        // 设置黑色背景，有的视频尺寸大小不能平铺满窗口
+        setBackgroundColor(Color.BLACK);
+        
         if (mPlayMode == PlayMode.PLAYMODE_WINDOW) {
             addView(mMediaControllerSmall);
             mMediaControllerSmall.hide();
@@ -80,17 +91,22 @@ public class PlayerView extends RelativeLayout {
             addView(mMediaControllerLarge);
             mMediaControllerLarge.hide();
         }
-        // 设置播放路径
-        // mVideoView.setVideoURI(Uri.parse("android.resource://"
-        // + context.getPackageName() + "/" + R.raw.videoviewdemo));
-        // 开始播放
-        // mVideoView.start();
-        //设置VideoView回调函数
+        // 设置VideoView回调函数
         mVideoView.setOnPreparedListener(mOnPreparedListener);
 
         mLyjOrientationDetector = new LyjOrientationDetector(context,
                 LyjOrientationDetector.SCREEN_ORIENTATION_PORTRAIT_NORMAL);
         mLyjOrientationDetector.setOnRequestPlayMode(mOnReuqestPlayModeListener);
+
+        // 半屏LayoutParam 界面未出现getLayoutParams = null
+        // mLayoutParamWindowMode = getLayoutParams();
+        mLayoutParamWindowMode = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,
+                RelativeLayout.LayoutParams.WRAP_CONTENT);
+        mLayoutParamWindowMode.height = (int) context.getResources().getDimension(R.dimen.player_height);
+
+        // 全屏LayoutParam
+        mLayoutParamFullScreenMode = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,
+                RelativeLayout.LayoutParams.MATCH_PARENT);
     }
 
     @Override
@@ -105,16 +121,15 @@ public class PlayerView extends RelativeLayout {
     }
 
     /************************************ VideoView的回调函数 ****************************************************/
-    //MediaPlayer-->回调给VideoView-->回调给PlayerView
+    // MediaPlayer-->回调给VideoView-->回调给PlayerView
     private OnPreparedListener mOnPreparedListener = new OnPreparedListener() {
-        
+
         @Override
         public void onPrepared(MediaPlayer mp) {
             mVideoView.start();
         }
     };
-    
-    
+
     /************************************ MediaController的回调函数 ****************************************************/
     private MediaPlayerControl mMediaPlayerController = new MediaPlayerControl() {
 
@@ -208,12 +223,19 @@ public class PlayerView extends RelativeLayout {
             removeView(mMediaControllerLarge);
             addView(mMediaControllerSmall);
             mMediaControllerSmall.hide();
+            setLayoutParams(mLayoutParamWindowMode);
+            // mWindow.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN
+            // | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
         }
         // 请求全屏播放
         else if (requestPlayMode == PlayMode.PLAYMODE_FULLSCREEN) {
             removeView(mMediaControllerSmall);
             addView(mMediaControllerLarge);
             mMediaControllerLarge.hide();
+            // 重新设置VideoView大小
+            setLayoutParams(mLayoutParamFullScreenMode);
+            // mWindow.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN
+            // | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
         }
         mPlayMode = requestPlayMode;
     }

@@ -21,7 +21,8 @@ public class MainTabAdapter extends FragmentPagerAdapter implements ViewPager.On
         mViewPager = pager;
         mViewPager.setAdapter(this);
         mViewPager.setOnPageChangeListener(this);
-        // mViewPager.setOffscreenPageLimit(2);
+        //页面缓存数
+        mViewPager.setOffscreenPageLimit(2);
         mTabs = new ArrayList<RadioButton>();
         mFragmentList = new ArrayList<Fragment>();
     }

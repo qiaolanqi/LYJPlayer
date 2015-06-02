@@ -20,7 +20,7 @@ public class MainActivity extends FragmentActivity implements OnClickListener {
     private RadioButton mTabOnline;
     private MainTabAdapter mAdapter;
     private LocalVideoFragment mLocalVideoFragment;
-    private OnlineVideoFragment mOnlineVideoFragment;
+    private OnlineVideoFragment mOnlineVideoFragment; 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

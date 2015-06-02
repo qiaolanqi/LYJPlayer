@@ -282,6 +282,7 @@ public class VideoView extends SurfaceView {
                     mVideoWidth = mp.getVideoWidth();
                     mVideoHeight = mp.getVideoHeight();
                     if (mVideoWidth != 0 && mVideoHeight != 0) {
+                        //设置surface的宽高，调用这个方法后会回调surfaceChanged
                         getHolder().setFixedSize(mVideoWidth, mVideoHeight);
                         requestLayout();
                     }

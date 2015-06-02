@@ -5,6 +5,7 @@ import java.util.List;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,8 +14,6 @@ import android.widget.ListView;
 
 import com.liyuejiao.player.PlayerActivity;
 import com.liyuejiao.player.R;
-import com.liyuejiao.player.R.id;
-import com.liyuejiao.player.R.layout;
 import com.liyuejiao.player.util.VideoScanner;
 import com.liyuejiao.player.util.VideoScanner.OnScanListener;
 
@@ -26,6 +25,7 @@ public class LocalVideoFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d("lyj", "LocalVideoFragment onCreate");
         VideoScanner scanner = new VideoScanner(getActivity());
         scanner.setOnScanListener(mOnScanListener);
         scanner.start();
@@ -33,12 +33,14 @@ public class LocalVideoFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        Log.d("lyj", "LocalVideoFragment onCreateView");
         return inflater.inflate(R.layout.fragment_local, container, false);
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        Log.d("lyj", "LocalVideoFragment onActivityCreated");
         mLocalVideoAdapter = new LocalVideoAdapter(getActivity());
         mListView = (ListView) getView().findViewById(R.id.listView);
         mListView.setAdapter(mLocalVideoAdapter);
@@ -49,7 +51,7 @@ public class LocalVideoFragment extends Fragment {
 
         @Override
         public void onStart() {
-            
+
         }
 
         @Override
@@ -58,7 +60,7 @@ public class LocalVideoFragment extends Fragment {
             mLocalVideoAdapter.notifyDataSetChanged();
         }
     };
-    
+
     private AdapterView.OnItemClickListener mOnItemClickListener = new AdapterView.OnItemClickListener() {
 
         @Override
@@ -69,4 +71,25 @@ public class LocalVideoFragment extends Fragment {
             startActivity(intent);
         }
     };
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.d("lyj", "LocalVideoFragment onDestroy");
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        Log.d("lyj", "LocalVideoFragment onDestroyView");
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        Log.d("lyj", "LocalVideoFragment onDetach");
+    }
+
+    
+     
 }

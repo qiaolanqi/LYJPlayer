@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +23,7 @@ public class OnlineVideoFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d("lyj", "OnlineVideoFragment onCreate");
         mOnlineList = new ArrayList<OnlineVideo>();
         mOnlineList.add(new OnlineVideo("迅雷看看", "http://m.kankan.com"));
         mOnlineList.add(new OnlineVideo("优酷", "http://3g.youku.com"));
@@ -35,12 +37,14 @@ public class OnlineVideoFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        Log.d("lyj", "OnlineVideoFragment onCreateView");
         return inflater.inflate(R.layout.fragment_online, container, false);
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        Log.d("lyj", "OnlineVideoFragment onActivityCreated");
         mOnlineAdapter = new OnlineAdapter(getActivity());
         mOnlineAdapter.updateList(mOnlineList);
 
@@ -60,4 +64,22 @@ public class OnlineVideoFragment extends Fragment {
             startActivity(intent);
         }
     };
+    
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.d("lyj", "OnlineVideoFragment onDestroy");
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        Log.d("lyj", "OnlineVideoFragment onDestroyView");
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        Log.d("lyj", "OnlineVideoFragment onDetach");
+    }
 }
