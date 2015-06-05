@@ -9,14 +9,12 @@ import io.vov.vitamio.Vitamio;
 import java.io.IOException;
 import java.util.Map;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.PixelFormat;
-import android.media.AudioManager;
 import android.net.Uri;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -105,7 +103,6 @@ public class VideoView extends SurfaceView {
 
         mCurrentState = STATE_IDLE;
         mTargetState = STATE_IDLE;
-        ((Activity) mContext).setVolumeControlStream(AudioManager.STREAM_MUSIC);
     }
 
     // 修正宽高比

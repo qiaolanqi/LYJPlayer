@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.RelativeLayout;
 
 import com.liyuejiao.player.local.LocalVideo;
@@ -22,6 +23,7 @@ public class PlayerView extends RelativeLayout {
     private VideoView mVideoView;
     private MediaControllerSmall mMediaControllerSmall;
     private MediaControllerLarge mMediaControllerLarge;
+    private MediaControllerMini mMediaControllerMini;
     // 窗口、全屏模式
     private PlayMode mPlayMode;
     private LyjOrientationDetector mLyjOrientationDetector;
@@ -56,9 +58,12 @@ public class PlayerView extends RelativeLayout {
     public void onPause() {
         mLyjOrientationDetector.disable();
     }
+    
+    public void onStop(){
+        mVideoView.stopPlayback();
+    }
 
     private void init(Context context, AttributeSet attrs, int defStyle) {
-        mActivity = (Activity) context;
         // 获取自定义属性
         TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.PlayerView);
         int playMode = ta.getInt(R.styleable.PlayerView_playMode, 0);
@@ -66,19 +71,27 @@ public class PlayerView extends RelativeLayout {
 
         if (playMode == 0) {
             mPlayMode = PlayMode.PLAYMODE_WINDOW;
-        } else {
+        } else if (playMode == 1) {
             mPlayMode = PlayMode.PLAYMODE_FULLSCREEN;
+        } else if (playMode == 2) {
+            mPlayMode = PlayMode.PLAYMODE_MINI;
         }
 
         ViewGroup rootView = (ViewGroup) LayoutInflater.from(context).inflate(R.layout.player_view, null);
         mVideoView = (VideoView) rootView.findViewById(R.id.videoView);
-        mMediaControllerSmall = (MediaControllerSmall) rootView.findViewById(R.id.mediaControllerSmall);
         mMediaControllerLarge = (MediaControllerLarge) rootView.findViewById(R.id.mediaControllerLarge);
+        mMediaControllerSmall = (MediaControllerSmall) rootView.findViewById(R.id.mediaControllerSmall);
+        mMediaControllerMini = (MediaControllerMini) rootView.findViewById(R.id.mediaControllerMini);
         // 设置播放器的控制界面
         mMediaControllerSmall.setMediaPlayer(mMediaPlayerController);
         mMediaControllerLarge.setMediaPlayer(mMediaPlayerController);
-
-        mWindow = mActivity.getWindow();
+        mMediaControllerMini.setMediaPlayer(mMediaPlayerController);
+        
+        if (context instanceof Activity) {
+            mActivity = (Activity) context;
+            mWindow = mActivity.getWindow();
+        }
+        // 需要Window控制亮度
         mMediaControllerLarge.setWindow(mWindow);
 
         rootView.removeAllViews();
@@ -93,6 +106,9 @@ public class PlayerView extends RelativeLayout {
         } else if (mPlayMode == PlayMode.PLAYMODE_FULLSCREEN) {
             addView(mMediaControllerLarge);
             mMediaControllerLarge.hide();
+        } else if (mPlayMode == PlayMode.PLAYMODE_MINI) {
+            addView(mMediaControllerMini);
+            mMediaControllerMini.hide();
         }
         // 设置VideoView回调函数
         mVideoView.setOnPreparedListener(mOnPreparedListener);
@@ -118,24 +134,29 @@ public class PlayerView extends RelativeLayout {
             return mMediaControllerSmall.dispatchTouchEvent(ev);
         } else if (mPlayMode == PlayMode.PLAYMODE_FULLSCREEN) {
             return mMediaControllerLarge.dispatchTouchEvent(ev);
+        } else if (mPlayMode == PlayMode.PLAYMODE_MINI) {
+            return mMediaControllerMini.dispatchTouchEvent(ev);
         } else {
             return true;
         }
     }
 
     /************************************ VideoView的回调函数 ****************************************************/
-    // OnPreparedListener:onPrepared方法  MediaPlayer-->回调给VideoView-->回调给PlayerView
+    // OnPreparedListener:onPrepared方法 MediaPlayer-->回调给VideoView-->回调给PlayerView
     private OnPreparedListener mOnPreparedListener = new OnPreparedListener() {
 
         @Override
         public void onPrepared(MediaPlayer mp) {
             mMediaPlayerController.start();
             mMediaControllerLarge.updateVideoTitle(mLocalVideo.name);
+            mMediaControllerMini.updateVideoTitle(mLocalVideo.name);
         }
     };
 
     /************************************ MediaController的回调函数 ****************************************************/
     private MediaPlayerControl mMediaPlayerController = new MediaPlayerControl() {
+
+        private WindowManager mWindowManager;
 
         @Override
         public void start() {
@@ -214,6 +235,13 @@ public class PlayerView extends RelativeLayout {
             }
         }
 
+        @Override
+        public void onFloatWindowShow() {
+            if (mOnPlayCallbackListener != null) {
+                mOnPlayCallbackListener.onFloatWindowShow();
+            }
+        }
+
     };
 
     /************************************ 旋转方向的回调函数 ****************************************************/
@@ -271,4 +299,8 @@ public class PlayerView extends RelativeLayout {
         mLocalVideo = localVideo;
     }
 
+    // 代码设置自定义属性
+    public void setPlayMode(PlayMode playMode) {
+        mPlayMode = playMode;
+    }
 }

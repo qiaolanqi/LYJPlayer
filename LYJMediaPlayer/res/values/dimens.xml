@@ -7,5 +7,7 @@
     <dimen name="controller_largestyle_back_width">13dp</dimen>
     <dimen name="controller_largestyle_back_height">25dp</dimen>
     <dimen name="controller_largestyle_title_width">156dp</dimen>
+    <dimen name="controller_mini_height">150dp</dimen>
+    <dimen name="controller_mini_width">250dp</dimen>
 
 </resources>

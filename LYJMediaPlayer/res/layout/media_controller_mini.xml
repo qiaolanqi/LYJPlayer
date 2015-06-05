@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:id="@+id/mediacontroller_top_ll"
+        android:layout_width="match_parent"
+        android:layout_height="35dp"
+        android:background="#CC000000" >
+
+        <ImageView
+            android:id="@+id/mediacontroller_mini_close"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="15dp"
+            android:src="@drawable/ic_mini_close_normal" />
+
+        <TextView
+            android:id="@+id/mediacontroller_mini_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="20dp"
+            android:layout_toLeftOf="@id/mediacontroller_mini_close"
+            android:text="Medium Text"
+            android:textColor="@color/white" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/mediacontroller_bottom_ll"
+        android:layout_width="match_parent"
+        android:layout_height="35dp"
+        android:layout_alignParentBottom="true"
+        android:background="#CC000000" >
+
+        <TextView
+            android:id="@+id/mediacontroller_mini_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="20dp"
+            android:text="Medium Text"
+            android:textColor="@color/white" />
+
+        <ImageView
+            android:id="@+id/mediacontroller_mini_fullscreen"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:src="@drawable/ic_media_fullscreen" />
+    </RelativeLayout>
+
+    <ImageView
+        android:id="@+id/mediacontroller_pause"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:src="@drawable/ic_pause_mini_normal" />
+
+</RelativeLayout>

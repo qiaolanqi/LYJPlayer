@@ -37,6 +37,15 @@
                 android:layout_marginLeft="10dp"
                 android:layout_toRightOf="@id/iv_back"
                 android:textColor="@color/black" />
+
+            <Button
+                android:id="@+id/mediacontroller_mini"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_alignTop="@+id/iv_back"
+                android:layout_centerVertical="true"
+                android:text="Mini" />
         </RelativeLayout>
     </LinearLayout>
 

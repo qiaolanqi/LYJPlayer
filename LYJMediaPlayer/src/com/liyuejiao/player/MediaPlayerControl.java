@@ -28,4 +28,6 @@ public interface MediaPlayerControl {
 
     void onBackPressed(PlayMode playMode);
 
+    void onFloatWindowShow();
+
 }

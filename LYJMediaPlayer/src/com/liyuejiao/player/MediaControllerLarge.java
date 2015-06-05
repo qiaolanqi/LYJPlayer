@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -26,6 +27,7 @@ public class MediaControllerLarge extends MediaControllerBase implements View.On
     private TextView mTvTitle;
     private LinearLayout mLyTop;
     private LinearLayout mLyBottom;
+    private Button mBtnMini;
 
     public MediaControllerLarge(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
@@ -62,9 +64,15 @@ public class MediaControllerLarge extends MediaControllerBase implements View.On
         mCurrentTime = (TextView) findViewById(R.id.mediacontroller_time);
         mTotalTime = (TextView) findViewById(R.id.mediacontroller_total);
         mLyBack = (RelativeLayout) findViewById(R.id.mediacontroller_back);
-        mLyBack.setOnClickListener(this);
+        if (mLyBack != null) {
+            mLyBack.setOnClickListener(this);
+        }
         mIvBack = (ImageView) findViewById(R.id.iv_back);
         mTvTitle = (TextView) findViewById(R.id.tv_title);
+        mBtnMini = (Button) findViewById(R.id.mediacontroller_mini);
+        if (mBtnMini != null) {
+            mBtnMini.setOnClickListener(this);
+        }
     }
 
     @Override
@@ -85,6 +93,10 @@ public class MediaControllerLarge extends MediaControllerBase implements View.On
         case R.id.mediacontroller_back:
             // 返回
             mPlayer.onBackPressed(PlayMode.PLAYMODE_FULLSCREEN);
+            break;
+        case R.id.mediacontroller_mini:
+            //桌面悬浮窗
+            mPlayer.onFloatWindowShow();
             break;
         default:
             break;
@@ -123,8 +135,7 @@ public class MediaControllerLarge extends MediaControllerBase implements View.On
     /**************** MediaController显示、隐藏 *******************/
     /**
      * 将两种控件分开控制<br>
-     * 1.当点击屏幕显示播放控制控件
-     * 2.当滑动时显示声音，亮度控件
+     * 1.当点击屏幕显示播放控制控件 2.当滑动时显示声音，亮度控件
      */
     @Override
     protected void onShow(int what) {
