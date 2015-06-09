@@ -8,8 +8,10 @@ import android.content.pm.ActivityInfo;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
+import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
@@ -35,6 +37,8 @@ public class PlayerView extends RelativeLayout {
 
     private OnPlayCallbackListener mOnPlayCallbackListener;
     private LocalVideo mLocalVideo;
+    private WindowManager.LayoutParams mWindowParams;
+    private WindowManager mWindowManager;
 
     public PlayerView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
@@ -58,12 +62,13 @@ public class PlayerView extends RelativeLayout {
     public void onPause() {
         mLyjOrientationDetector.disable();
     }
-    
-    public void onStop(){
+
+    public void onStop() {
         mVideoView.stopPlayback();
     }
 
     private void init(Context context, AttributeSet attrs, int defStyle) {
+        mWindowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         // 获取自定义属性
         TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.PlayerView);
         int playMode = ta.getInt(R.styleable.PlayerView_playMode, 0);
@@ -86,7 +91,7 @@ public class PlayerView extends RelativeLayout {
         mMediaControllerSmall.setMediaPlayer(mMediaPlayerController);
         mMediaControllerLarge.setMediaPlayer(mMediaPlayerController);
         mMediaControllerMini.setMediaPlayer(mMediaPlayerController);
-        
+
         if (context instanceof Activity) {
             mActivity = (Activity) context;
             mWindow = mActivity.getWindow();
@@ -128,17 +133,51 @@ public class PlayerView extends RelativeLayout {
                 RelativeLayout.LayoutParams.MATCH_PARENT);
     }
 
+    private int lastX = -1;
+    private int lastY = -1;
+
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
+        Log.d("lyj", "PlayerView dispatchTouchEvent");
         if (mPlayMode == PlayMode.PLAYMODE_WINDOW) {
             return mMediaControllerSmall.dispatchTouchEvent(ev);
         } else if (mPlayMode == PlayMode.PLAYMODE_FULLSCREEN) {
             return mMediaControllerLarge.dispatchTouchEvent(ev);
         } else if (mPlayMode == PlayMode.PLAYMODE_MINI) {
+            if (lastX == -1) {
+                lastX = (int) ev.getX();
+            }
+            if (lastY == -1) {
+                lastY = (int) ev.getY();
+            }
+            switch (ev.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                break;
+            case MotionEvent.ACTION_MOVE:
+                int deltaX = (int) ev.getX() - this.lastX;
+                int deltaY = (int) ev.getY() - this.lastY;
+                if (deltaX > 5 || deltaY > 5) {
+                    mWindowParams.x += deltaX;
+                    mWindowParams.y += deltaY;
+                    mWindowManager.updateViewLayout((View) getParent(), mWindowParams);
+
+                    lastX = (int) ev.getX();
+                    lastY = (int) ev.getY();
+                }
+                break;
+            case MotionEvent.ACTION_UP:
+                break;
+            }
             return mMediaControllerMini.dispatchTouchEvent(ev);
         } else {
             return true;
         }
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        Log.d("lyj", "PlayerView onTouchEvent");
+        return super.onTouchEvent(event);
     }
 
     /************************************ VideoView的回调函数 ****************************************************/
@@ -156,13 +195,12 @@ public class PlayerView extends RelativeLayout {
     /************************************ MediaController的回调函数 ****************************************************/
     private MediaPlayerControl mMediaPlayerController = new MediaPlayerControl() {
 
-        private WindowManager mWindowManager;
-
         @Override
         public void start() {
             mVideoView.start();
             mMediaControllerSmall.updateVideoButtonState(true);
             mMediaControllerLarge.updateVideoButtonState(true);
+            mMediaControllerMini.updateVideoButtonState(true);
         }
 
         @Override
@@ -176,6 +214,7 @@ public class PlayerView extends RelativeLayout {
                 mVideoView.pause();
                 mMediaControllerSmall.updateVideoButtonState(false);
                 mMediaControllerLarge.updateVideoButtonState(false);
+                mMediaControllerMini.updateVideoButtonState(false);
             }
         }
 
@@ -242,6 +281,20 @@ public class PlayerView extends RelativeLayout {
             }
         }
 
+        @Override
+        public void onFloatWindowClose() {
+            if (mOnPlayCallbackListener != null) {
+                mOnPlayCallbackListener.onFloatWindowClose();
+            }
+        }
+
+        @Override
+        public void onFloatWindowFullScreen() {
+            if (mOnPlayCallbackListener != null) {
+                mOnPlayCallbackListener.onFloatWindowFullScreen();
+            }
+        }
+
     };
 
     /************************************ 旋转方向的回调函数 ****************************************************/
@@ -302,5 +355,9 @@ public class PlayerView extends RelativeLayout {
     // 代码设置自定义属性
     public void setPlayMode(PlayMode playMode) {
         mPlayMode = playMode;
+    }
+
+    public void setWindowParams(android.view.WindowManager.LayoutParams windowParams) {
+        mWindowParams = windowParams;
     }
 }

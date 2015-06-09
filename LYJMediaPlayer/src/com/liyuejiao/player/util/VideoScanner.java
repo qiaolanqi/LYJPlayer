@@ -94,7 +94,9 @@ public class VideoScanner {
             if (files != null) {
                 for (int i = 0; i < files.length && !isCancelled(); i++) {
                     File childFile = files[i];
-                    if (childFile.isFile() && isSupportedVideoFile(childFile)) {// 文件
+                    if (childFile.isDirectory()) {// 文件夹
+                        scan(childFile);
+                    } else if (childFile.isFile() && isSupportedVideoFile(childFile)) {// 文件
                         float fileSize = (float) (childFile.length() / BASE_LENGTH_BYTES);
                         LocalVideo video = new LocalVideo();
                         video.name = childFile.getName();

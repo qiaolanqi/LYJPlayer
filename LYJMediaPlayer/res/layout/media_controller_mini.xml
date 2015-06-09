@@ -26,6 +26,8 @@
             android:layout_centerVertical="true"
             android:layout_marginLeft="20dp"
             android:layout_toLeftOf="@id/mediacontroller_mini_close"
+            android:ellipsize="end"
+            android:singleLine="true"
             android:text="Medium Text"
             android:textColor="@color/white" />
     </RelativeLayout>
@@ -52,6 +54,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="15dp"
             android:src="@drawable/ic_media_fullscreen" />
     </RelativeLayout>
 
@@ -59,8 +63,7 @@
         android:id="@+id/mediacontroller_pause"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:src="@drawable/ic_pause_mini_normal" />
+        android:layout_centerInParent="true"
+        android:background="@drawable/ic_pause_mini_normal" />
 
 </RelativeLayout>

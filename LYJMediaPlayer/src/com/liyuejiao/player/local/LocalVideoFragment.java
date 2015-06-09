@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 
 import com.liyuejiao.player.PlayerActivity;
 import com.liyuejiao.player.R;
@@ -20,6 +21,7 @@ import com.liyuejiao.player.util.VideoScanner.OnScanListener;
 
 public class LocalVideoFragment extends Fragment {
 
+    private ProgressBar mProgressBar;
     private ListView mListView;
     private LocalVideoAdapter mLocalVideoAdapter;
 
@@ -46,19 +48,22 @@ public class LocalVideoFragment extends Fragment {
         mListView = (ListView) getView().findViewById(R.id.listView);
         mListView.setAdapter(mLocalVideoAdapter);
         mListView.setOnItemClickListener(mOnItemClickListener);
+        
+        mProgressBar = (ProgressBar) getView().findViewById(R.id.progressBar);
+        mProgressBar.setVisibility(View.VISIBLE);
     }
 
     private OnScanListener mOnScanListener = new OnScanListener() {
 
         @Override
         public void onStart() {
-
         }
 
         @Override
         public void onStop(List<LocalVideo> result) {
             mLocalVideoAdapter.updateList(result);
             mLocalVideoAdapter.notifyDataSetChanged();
+            mProgressBar.setVisibility(View.GONE);
         }
     };
 

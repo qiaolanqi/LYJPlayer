@@ -1,7 +1,10 @@
 package com.liyuejiao.player;
 
+import com.liyuejiao.player.util.PlayerUtils;
+
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
@@ -62,7 +65,7 @@ public class MediaControllerMini extends MediaControllerBase implements View.OnC
             // 播放中
             if (mPlayer.isPlaying()) {
                 mPlayer.pause();
-                show(0);// 暂停市MediaController永久显示
+                show(0);// 暂停时MediaController永久显示
             }
             // 未播放
             else {
@@ -71,10 +74,10 @@ public class MediaControllerMini extends MediaControllerBase implements View.OnC
             }
             break;
         case R.id.mediacontroller_mini_close:
-
+            mPlayer.onFloatWindowClose();
             break;
         case R.id.mediacontroller_mini_fullscreen:
-
+            mPlayer.onFloatWindowFullScreen();
             break;
         default:
             break;
@@ -94,22 +97,46 @@ public class MediaControllerMini extends MediaControllerBase implements View.OnC
 
     @Override
     protected void onTimerTicker() {
-        // TODO Auto-generated method stub
+        long curTime = mPlayer.getCurrentPosition();
+        long durTime = mPlayer.getDuration();
 
+        if (durTime > 0 && curTime <= durTime) {
+            // float percentage = ((float) curTime) / durTime;
+            mTvTime.setText(PlayerUtils.stringForTime(curTime) + "/" + PlayerUtils.stringForTime(durTime));
+        }
     }
 
     /******************* 分发Touch事件 **************************/
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
+        Log.d("lyj", "MediaControllerMini dispatchTouchEvent");
         return super.dispatchTouchEvent(ev);
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        Log.d("lyj", "MediaControllerMini onTouchEvent");
         return super.onTouchEvent(event);
     }
 
     public void updateVideoTitle(String name) {
         mTvTitle.setText(name);
+    }
+
+    /******************* 更新播放器状态 **************************/
+    public void updateVideoButtonState(boolean isStart) {
+        // 播放中
+        if (isStart) {
+            mIvPause.setBackgroundResource(R.drawable.ic_pause_mini_normal);
+            if (mPlayer.canPause()) {
+                mIvPause.setEnabled(true);
+            } else {
+                mIvPause.setEnabled(false);
+            }
+        }
+        // 未播放
+        else {
+            mIvPause.setBackgroundResource(R.drawable.ic_play_mini_normal);
+        }
     }
 }

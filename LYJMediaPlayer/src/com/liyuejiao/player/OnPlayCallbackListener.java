@@ -4,4 +4,8 @@ public interface OnPlayCallbackListener {
     void onBackPressed();
 
     void onFloatWindowShow();
+
+    void onFloatWindowClose();
+
+    void onFloatWindowFullScreen();
 }

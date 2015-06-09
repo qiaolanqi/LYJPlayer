@@ -1,53 +1,41 @@
 package com.liyuejiao.player;
 
-import com.liyuejiao.player.util.Constant;
-import com.liyuejiao.player.util.SystemUtils;
-import com.liyuejiao.player.widget.VoiceLightWidget;
-
 import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
-import android.view.WindowManager;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
-import android.widget.TextView;
+
+import com.liyuejiao.player.util.Constant;
+import com.liyuejiao.player.util.SystemUtils;
+import com.liyuejiao.player.widget.VoiceLightWidget;
 
 public abstract class MediaControllerBase extends FrameLayout {
 
     protected MediaPlayerControl mPlayer;
-    private Context mContext;
-    // VideoView中调用setAnchorView()设置进来的View，MediaController显示的时候会感觉该AnchorView的位置进行显示
-    private View mAnchor;
     // MediaController最外层的根布局
     private View mRoot;
-    // 通过Window的方式来显示MediaController，MediaController是一个填充屏幕的布局，但是背景是透明的
-    private WindowManager mWindowManager;
     private Window mWindow;
-    private View mDecor;
-    // 理解为当前整个MediaController的布局
-    private WindowManager.LayoutParams mDecorLayoutParams;
     private ProgressBar mProgress;
-    private TextView mEndTime, mCurrentTime;
     // 最好不用这个BOOL表示是否显示MediaController，因为默认3秒隐藏
     private boolean mShowing = true;
-    private boolean mDragging;
     // 默认自动消失的时间
     private static final int sDefaultTimeout = 3000;
     protected static final int TIMER_TICKER_INTERVAL = 1000;
     private static final int FADE_OUT = 1;
     private static final int SHOW_PROGRESS = 2;
     private static final int MSG_TIMER_TICKER = 3;
-    private boolean mUseFastForward;
     private boolean mFromXml;
     private boolean mListenersSet;
     private View.OnClickListener mNextListener, mPrevListener;
@@ -80,6 +68,7 @@ public abstract class MediaControllerBase extends FrameLayout {
         mGestureDetector = new GestureDetector(getContext(), new GestureDetector.SimpleOnGestureListener() {
             @Override
             public boolean onSingleTapUp(MotionEvent e) {
+                Log.d("lyj", "GestureDetector onSingleTapUp");
                 toggle();
                 return false;
             }
@@ -225,11 +214,13 @@ public abstract class MediaControllerBase extends FrameLayout {
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
+        Log.d("lyj", "MediaControllerBase dispatchTouchEvent");
         return super.dispatchTouchEvent(ev);
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        Log.d("lyj", "MediaControllerBase onTouchEvent");
         switch (event.getAction()) {
         case MotionEvent.ACTION_DOWN:
 
@@ -302,13 +293,6 @@ public abstract class MediaControllerBase extends FrameLayout {
         show(sDefaultTimeout);
         return super.dispatchKeyEvent(event);
     }
-
-    private View.OnClickListener mPauseListener = new View.OnClickListener() {
-        public void onClick(View v) {
-            doPauseResume();
-            show(sDefaultTimeout);
-        }
-    };
 
     private void updatePausePlay() {
         if (mRoot == null || mPauseButton == null)

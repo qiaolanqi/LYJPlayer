@@ -461,6 +461,7 @@ public class VideoView extends SurfaceView {
                 // 如果当前已经是播放状态的话就调用mediaplayer.start() 方法，并且把当前状态以及目标状态进行改变
                 start();
             }
+            getHolder().setFormat(PixelFormat.RGBX_8888);
         }
 
         public void surfaceCreated(SurfaceHolder holder) {

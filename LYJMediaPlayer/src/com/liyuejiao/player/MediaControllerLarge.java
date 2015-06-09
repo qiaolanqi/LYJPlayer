@@ -2,6 +2,7 @@ package com.liyuejiao.player;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
@@ -77,6 +78,7 @@ public class MediaControllerLarge extends MediaControllerBase implements View.On
 
     @Override
     public void onClick(View v) {
+        Log.d("lyj", "onclick");
         switch (v.getId()) {
         case R.id.mediacontroller_pause:
             // 播放中
@@ -176,11 +178,13 @@ public class MediaControllerLarge extends MediaControllerBase implements View.On
     /******************* 分发Touch事件 **************************/
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
+        Log.d("lyj", "MediaControllerLarge dispatchTouchEvent");
         return super.dispatchTouchEvent(ev);
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        Log.d("lyj", "MediaControllerLarge onTouchEvent");
         return super.onTouchEvent(event);
     }
 

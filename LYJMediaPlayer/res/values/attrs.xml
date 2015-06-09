@@ -6,6 +6,7 @@
         <attr name="playMode">
             <enum name="window" value="0" />
             <enum name="fullscreen" value="1" />
+            <enum name="mini" value="2" />
         </attr>
     </declare-styleable>
 

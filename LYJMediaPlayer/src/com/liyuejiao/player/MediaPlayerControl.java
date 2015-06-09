@@ -30,4 +30,8 @@ public interface MediaPlayerControl {
 
     void onFloatWindowShow();
 
+    void onFloatWindowClose();
+
+    void onFloatWindowFullScreen();
+
 }
